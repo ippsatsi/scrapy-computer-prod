@@ -1,0 +1,111 @@
+python3 -m venv venv
+source venv/bin/activate
+pip install django scrapy scrapyd python-scrapyd-api
+django-admin startproject Crawler
+python manage.py startapp main
+
+Add main app into INSTALLED_APPS in settings.py
+
+models.py
+from django.db import models
+from django.utils import timezone
+
+class Quote(models.Model):
+    """
+    The scrapped data will be saved in this model
+    """
+    text = models.TextField()
+    author = models.CharField(max_length=512)
+    fecha = models.DateField(default=timezone.now)
+-----------------------------------------
+
+$ python manage.py makemigrations
+$ python manage.py migrate
+
+Add a admin.py
+
+from main.models import Quote
+
+class QuoteAdmin(admin.ModelAdmin):
+    list_display = ('author', 'text','fecha' )
+
+
+admin.site.register(Quote, QuoteAdmin)
+----------------------------------------
+
+scrapy startproject scrapy_app
+
+ cd /scrapy_app/scrapy_app/spiders
+ crapy genspider  toscrape-css "http://quotes.toscrape.com/"
+
+en def parse:
+        for quote in response.css("div.quote"):
+            yield {
+                'text': quote.css("span.text::text").extract_first(),
+                'author': quote.css("small.author::text").extract_first(),
+                'tags': quote.css("div.tags > a.tag::text").extract()
+            }
+
+        next_page_url = response.css("li.next > a::attr(href)").extract_first()
+        if next_page_url is not None:
+            yield scrapy.Request(response.urljoin(next_page_url))
+
+--------------------------------
+
+En scrapy_app/scrapy_app/stting.py:
+
+import os
+import sys
+
+# DJANGO INTEGRATION
+
+sys.path.append(os.path.dirname(os.path.abspath('.')))
+# Do not forget the change iCrawler part based on your project name
+os.environ['DJANGO_SETTINGS_MODULE'] = 'iCrawler.settings'
+
+# This is required only if Django Version > 1.8
+import django
+django.setup()
+-----------------------
+
+En pipelines.py:
+
+from main.models import Quote
+from asgiref.sync import sync_to_async
+
+class ScrapyAppPipeline(object):
+    @sync_to_async
+    def process_item(self, item, spider):
+        quote = Quote(text=item.get('text'), author=item.get('author'))
+        quote.save()
+        return item
+--------------------------------
+
+Descomentamos en scrapy_app/scrapy_app/stting.py:
+ITEM_PIPELINES = {
+    "scrapy_app.pipelines.ScrapyAppPipeline": 300,
+}
+-----------------------------
+
+cd ..
+cd ..
+dentro de scrapy_app:
+
+Ejecutamos:
+
+scrapyd
+
+Listar proyectos:
+curl http://localhost:6800/listprojects.json
+{"node_name": "itstore-soporte", "status": "ok", "projects": ["default"]}
+
+listar spiders de un projecto:
+curl http://localhost:6800/listspiders.json?project=default
+{"node_name": "itstore-soporte", "status": "ok", "spiders": ["toscrape-css"]}
+
+lanzar spider:
+curl http://127.0.0.1:6800/schedule.json -d project=default -d spider=toscrape-css
+{"node_name": "itstore-soporte", "status": "ok", "jobid": "aff0f3ca148311ee94796d6da4fa8ad9"}
+
+crear usuario, para entrar en admin y revisar:
+python manage.py createsuperuser
