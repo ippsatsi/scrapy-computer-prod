@@ -1,0 +1,94 @@
+
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>It Store Productos</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+<link href="{% static 'main/css/buscador_0.1.css' %}" rel="stylesheet"/>
+</head>
+<body>
+  <div class="container">
+    <br><br>
+
+    <h1>Productos IT Store</h1>
+
+    <br><br>
+  </div>
+  <div class="container">
+  <div class="col-md-8 mb-3 mb-md-0">
+
+    <form class="form-inline" action="{% url 'buscar_productos' %}" method="get">
+<div class="input-group">
+<input name="q" type="search" class="form-control rounded" required placeholder="Buscar productos ..." aria-label="Buscar" aria-describedby="buscar-addon" />
+<button type="submit" class="btn btn-outline-primary">Buscar</button>
+</div>
+
+    </form>
+        </div>
+  </div>
+  <div class="container">
+    <table class="table">
+      <thead class="thead-dark">
+      <tr>
+          <th scope="col">#</th>
+          <th scope="col">Producto</th>
+          <th scope="col">Soles</th>
+          <th scope="col">Dolares</th>
+          <th scope="col">Categoria</th>
+          <th scope="col">Marca</th>
+          <th scope="col">Proveedor</th>
+          <th scope="col">Fecha</th>
+          
+      </tr>
+      </thead>
+      <tbody>
+    {% for semana in object_list %}
+    <tr>
+        <th scope="row">{{ semana.id }}</th>
+        <td>{{ semana.titulo }}</td>
+
+        {% if semana.precio_soles %}
+          <td>S/{{ semana.precio_soles|floatformat:2 }}</td>
+        {% else %}
+          <td></td>
+        {% endif %}
+
+        {% if semana.precio_dolares %}
+          <td>${{ semana.precio_dolares|floatformat:2 }}</td>
+        {% else %}
+          <td></td>
+        {% endif %}
+        <td>{{ semana.categoria }}</td>
+        <td>{{ semana.marca }}</td>
+        <td>{{ semana.proveedor }}</td>
+        <td>{{ semana.fecha|date:"d M " }}</td>
+    </tr>
+    {% empty %}
+        <p>No hay productos en la base.</p>
+    {% endfor %}
+  </tbody>
+</table>
+  </div>
+    
+  <!-- Pagination -->
+  <div class='pagination justify-content-center'>
+    {% if page_obj.has_previous %}
+      <a href='?q={{ request.GET.q }}&page={{ page_obj.previous_page_number }}'>Previous </a>
+    {% endif %}
+
+    <span class='mx-4'>
+      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+      <a href='?q={{ request.GET.q }}&page={{ page_obj.next_page_number }}' > Next</a>
+    {% endif %}
+  </div>
+  <!-- END Pagination -->
+</body>
+</html>
