@@ -18,7 +18,7 @@ class ListaProductos(ListView):
     def get_queryset(self):
         result_delete = Producto.objects.filter(fecha__lt=date.today()).delete()
         print(result_delete)
-        return Producto.objects.order_by('-marca', '-precio_soles')
+        return Producto.objects.order_by('-marca', '-precio_dolares')
 
 class BuscarProductos(ListView):
     model = Producto
@@ -32,5 +32,5 @@ class BuscarProductos(ListView):
             lambda a, b: a & b,
             (Q(titulo__icontains=term) for term in list_query),
         )
-        return Producto.objects.filter(str_query).order_by('-marca', '-precio_soles')
+        return Producto.objects.filter(str_query).order_by('-marca', '-precio_dolares')
     
