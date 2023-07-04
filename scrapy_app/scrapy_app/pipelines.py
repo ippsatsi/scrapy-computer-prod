@@ -33,6 +33,7 @@ class ProductoPipeline(object):
     
 def price_clean(price):
     price = price.replace('S/.','')\
+            .replace('\xa0','')\
             .replace('(','')\
             .replace(')','')\
             .replace(',','.')\
