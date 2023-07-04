@@ -358,3 +358,95 @@ class MMStoreSearchSpider2(scrapy.Spider):
     async def errback(self, failure):
         page = failure.request.meta["playwright_page"]
         await page.close()
+
+
+class ITStoreSearchSpider(scrapy.Spider):
+
+    name = "itstore_searh_run"
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'scrapy_app.pipelines.ProductoPipeline': 300
+        }
+    }
+    allowed_domain = ["itstore.pe"]
+    start_urls = ['https://itstore.pe/product-category/teclados-mouse/',
+                  'https://itstore.pe/product-category/microfono-audifono/',
+                  'https://itstore.pe/product-category/gaming/',
+                  'https://itstore.pe/product-category/accesorios/',
+                #   '',
+                #   '',
+                #   '',
+                #   '',
+                #   '',
+                  ]
+    proveedor = 'itstore'
+
+
+    def start_requests(self):
+        for link in self.start_urls:
+            yield scrapy.Request(link, callback=self.parse)
+
+
+    def parse(self, response):
+        for product in response.xpath("//div[@class='mf-product-details']"):
+
+            sc1_item = ProductoItem()
+
+            #items de productos
+            sc1_item['titulo'] = product.xpath("normalize-space(.//div[@class='mf-product-content']//a/text())").get()
+            sc1_item['precio_soles'] = product.xpath("normalize-space(./div[2]/span/span//span/bdi/text())").get()
+            sc1_item['precio_dolares'] = product.xpath("normalize-space(./div[2]/span/p/span//bdi)").get()\
+                                                .strip()
+            
+            sc1_item['categoria'] = ''
+            sc1_item['marca'] = ''
+            sc1_item['proveedor'] = self.proveedor
+            yield sc1_item
+
+        next_page = response.xpath('//a[@class="next page-numbers"]/@href').get()
+
+        if next_page is not None:
+            yield response.follow(next_page, callback=self.parse)
+
+
+class ITStoreSpider(CrawlSpider):
+    name = "itstore_run"
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'scrapy_app.pipelines.ProductoPipeline': 300
+        }
+    }
+    allowed_domain = ["mmstoreperu.com"]
+    start_urls = ['https://itstore.pe/product-category/teclados-mouse/',
+                  'https://itstore.pe/product-category/microfono-audifono/',
+                  'https://itstore.pe/product-category/gaming/',
+                  'https://itstore.pe/product-category/accesorios/',
+                #   '',
+                #   '',
+                #   '',
+                #   '',
+                #   '',
+                  ]
+    proveedor = 'itstore'
+
+    rules = {
+        Rule(LinkExtractor(allow = (), restrict_xpaths = ("//div[@class='mf-product-content']//h2[@class='woo-loop-product__title']/a") ),callback= 'parse_item',),
+        Rule(LinkExtractor(allow = (), restrict_xpaths = ('//a[@class="next page-numbers"]'))) ,
+        
+    }
+
+    def parse_item(self, response):
+        sc1_item = ProductoItem()
+
+        #items de productos
+        sc1_item['titulo'] = response.xpath("//h1/text()").get()
+        sc1_item['precio_soles'] = response.xpath("normalize-space(//div[contains(@class, 'entry-summary')]/p/span//span/bdi/text())").get()
+        sc1_item['precio_dolares'] = response.xpath("normalize-space(//div[contains(@class, 'entry-summary')]/p[2]/span//bdi)").get()
+
+        sc1_item['categoria'] = response.xpath("normalize-space(//span[@class='posted_in']/a[1]/text())").get()
+        
+        sc1_item['marca'] = response.xpath("normalize-space(//li[@class='meta-brand']/a/text())").get()
+        
+        sc1_item['proveedor'] = self.proveedor
+      
+        yield sc1_item
