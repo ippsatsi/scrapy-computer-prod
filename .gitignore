@@ -160,3 +160,5 @@ cython_debug/
 #.idea/
 
 cron_task.py
+scrapy_app/twistd.pid
+scrapy_app/dbs/default.db
