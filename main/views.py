@@ -18,7 +18,7 @@ class ListaProductos(ListView):
 
     def get_queryset(self):
         result_delete = Producto.objects.filter(fecha__lt=date.today()).delete()
-        print(result_delete)
+        # print(result_delete)
         return Producto.objects.order_by('-marca', '-precio_dolares')
     
     def get_context_data(self, **kwargs):

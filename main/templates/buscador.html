@@ -59,7 +59,7 @@
     <table class="table">
       <thead class="thead-dark">
       <tr>
-          <th scope="col">#</th>
+          <th scope="col">#1</th>
           <th scope="col">Producto</th>
           <th scope="col">Soles</th>
           <th scope="col">Dolares</th>
@@ -73,7 +73,9 @@
       <tbody>
     {% for semana in object_list %}
     <tr>
-        <th scope="row">{{ semana.id }}</th>
+    <tr>
+        <th scope="row">{{ forloop.counter0|add:page_obj.start_index }}</th>
+        
         <td>{{ semana.titulo }}</td>
 
         {% if semana.precio_soles %}
