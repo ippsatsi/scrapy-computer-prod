@@ -21,7 +21,7 @@ class ScrapyAppPipeline(object):
 class ProductoPipeline(object):
     @sync_to_async
     def process_item(self, item, spider):
-        producto = Producto(titulo=item.get('titulo').lower().capitalize(), 
+        producto = Producto(titulo=tilde_clean(item.get('titulo').lower().capitalize()), 
                         precio_soles= price_format(price_clean(item.get('precio_soles'))),
                         precio_dolares= price_format(price_clean(item.get('precio_dolares'))),
                         categoria=item.get('categoria').lower(),
@@ -42,6 +42,19 @@ def price_clean(price):
             .replace('S/', '')\
             .strip()
     return price
+
+def tilde_clean(titulo):
+    titulo = titulo.replace('á','a')\
+                .replace('é','e')\
+                .replace('í','i')\
+                .replace('ó','o')\
+                .replace('ú','u')\
+                .replace('Á','A')\
+                .replace('É','E')\
+                .replace('Í','I')\
+                .replace('Ó','O')\
+                .replace('Ú','U')
+    return titulo
         
 def price_format(price):
     return None if price == '' else float(price)
