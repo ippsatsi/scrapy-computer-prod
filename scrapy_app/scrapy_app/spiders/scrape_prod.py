@@ -16,7 +16,9 @@ class CYCSpider(CrawlSpider):
         }
     }
     allowed_domain = ["cyccomputer.pe"]
-    start_urls = ['https://cyccomputer.pe/739-perifericos-gamer']
+    start_urls = ['https://cyccomputer.pe/739-perifericos-gamer',
+                  'https://cyccomputer.pe/781-tarjetas-graficas',
+                  ]
     proveedor = 'cyccomputer'
 
     rules = {
@@ -85,6 +87,7 @@ class Yamoshi_Spider(CrawlSpider):
                   'https://yamoshi.com.pe/104-sillas-gamer',
                   'https://yamoshi.com.pe/192-camaras-web',
                   'https://yamoshi.com.pe/193-accesorios-para-streaming',
+                  'https://yamoshi.com.pe/66-tarjeta-de-video',
                   ]
     proveedor = 'Yamoshi'
 
@@ -141,6 +144,7 @@ class InfotecSpider(CrawlSpider):
                   'https://www.infotec.com.pe/100-mouse-gamer',
                   'https://www.infotec.com.pe/101-audifonos-gamer',
                   'https://www.infotec.com.pe/920-accesorios-gamer',
+                  'https://www.infotec.com.pe/34-tarjetas-de-video',
                   ]
     proveedor = 'infotec'
 
@@ -204,12 +208,15 @@ class MemoryKingSpider(CrawlSpider):
                   'https://www.memorykings.pe/listados/702/gaming-headset',
                  # 'https://www.memorykings.pe/listados/709/gaming-display-monitors',
                   'https://www.memorykings.pe/listados/701/gaming-mice',
+                  'https://www.memorykings.pe/subcategorias/64/tarjetas-graficas-amd-radeon-rx-radeon-pro',
+                  'https://www.memorykings.pe/subcategorias/16/tarjetas-graficas-nvidia-geforce-nvidia-quadro',
                   'https://www.memorykings.pe/listados/705/gaming-mouse-pad']
     proveedor = 'memorykings'
 
     rules = {
         Rule(LinkExtractor(allow = (), restrict_xpaths = ('/html/body/form/section[2]/div[3]/div/ul/li//a') ),callback= 'parse_item',),
-        
+        Rule(LinkExtractor(allow = (), restrict_xpaths = ('//ul/li/div/a'))),
+        # //ul/li/div/a
     }
 
     def parse_item(self, response):
@@ -421,7 +428,7 @@ class ITStoreSpider(CrawlSpider):
                   'https://itstore.pe/product-category/microfono-audifono/',
                   'https://itstore.pe/product-category/gaming/',
                   'https://itstore.pe/product-category/accesorios/',
-                #   '',
+                  'https://itstore.pe/product-category/tarjetas-de-video/',
                 #   '',
                 #   '',
                 #   '',
