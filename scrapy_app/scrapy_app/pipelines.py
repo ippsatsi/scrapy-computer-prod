@@ -32,11 +32,15 @@ class ProductoPipeline(object):
         return item
     
 def price_clean(price):
+    if price.find(',') > 0 and price.find('.') > 0:
+        price = price.replace(',','')
+    else:
+        price = price.replace(',', '.')
+
     price = price.replace('S/.','')\
             .replace('\xa0','')\
             .replace('(','')\
             .replace(')','')\
-            .replace(',','.')\
             .replace('PEN', '')\
             .replace('$','')\
             .replace('S/', '')\

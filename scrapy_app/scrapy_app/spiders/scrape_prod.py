@@ -369,7 +369,7 @@ class MMStoreSearchSpider2(scrapy.Spider):
 
 class ITStoreSearchSpider(scrapy.Spider):
 
-    name = "itstore_searh_run"
+    name = "itstore_search_run"
     custom_settings = {
         'ITEM_PIPELINES': {
             'scrapy_app.pipelines.ProductoPipeline': 300
@@ -417,13 +417,16 @@ class ITStoreSearchSpider(scrapy.Spider):
 
 
 class ITStoreSpider(CrawlSpider):
+    """
+    scrapy parse --spider=itstore_run -c parse_item  'https://itstore.pe/product/tarjeta-video-galax-nvidia-geforce-rtx-3090-sg-24gb-1-click-oc-gddr6x-384-bit-39nsm5md1gna/'
+    """
     name = "itstore_run"
     custom_settings = {
         'ITEM_PIPELINES': {
             'scrapy_app.pipelines.ProductoPipeline': 300
         }
     }
-    allowed_domain = ["mmstoreperu.com"]
+    allowed_domain = ["itstore.pe"]
     start_urls = ['https://itstore.pe/product-category/teclados-mouse/',
                   'https://itstore.pe/product-category/microfono-audifono/',
                   'https://itstore.pe/product-category/gaming/',
