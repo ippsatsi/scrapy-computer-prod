@@ -25,7 +25,11 @@
         <ul class="nav navbar-nav">
           {% for empresa in prodXproveedor %}
           <li class="navbar-item d-block">
-            <a href="#" class="nav-link"><span class="d-block">{{empresa.proveedor}}</span> <p class="text-center pb-0 mb-0">{{empresa.num_prod}}</p></a>
+            {% comment %} <form action="{% url 'buscar_productos' %}" method="get">
+              <input name="proveedor" type="hidden" />
+              <button type="submit"><span class="d-block">{{empresa.proveedor}}</span> <p class="text-center pb-0 mb-0"></button>
+              </div> {% endcomment %}
+            <a href="proveedor/?prov={{empresa.proveedor}}" class="nav-link"><span class="d-block">{{empresa.proveedor}}</span> <p class="text-center pb-0 mb-0">{{empresa.num_prod}}</p></a>
           </li>
           {% endfor %}
         </ul>
